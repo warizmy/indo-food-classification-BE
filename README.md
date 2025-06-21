@@ -59,7 +59,7 @@ GOOGLE_API_KEY="YOUR_API_KEY_HERE"
 ```
 
 ### 5. Place the Model File
-1. Create a models/ directory in the project's root.
+1. Create a ```models/``` directory in the project's root.
 2. Place your trained model file inside this directory
 
 ## ▶️ Usage
