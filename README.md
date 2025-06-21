@@ -62,14 +62,14 @@ GOOGLE_API_KEY="YOUR_API_KEY_HERE"
 1. Create a models/ directory in the project's root.
 2. Place your trained model file inside this directory
 
-▶️ Usage
+## ▶️ Usage
 Once the setup is complete, run the Flask server from your terminal:
 ```bash
 python app.py
 ```
 The API will be available at ```http://127.0.0.1:5000```
 
-API Endpoint
+## API Endpoint
 ```POST /predict```
 The primary endpoint for image classification.
 - Method: ```POST```
