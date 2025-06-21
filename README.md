@@ -79,8 +79,8 @@ The primary endpoint for image classification.
 - Success Response (```200 OK```):
 ```bash
 {
-  "food_name": "Rendang",
-  "image_url": "[http://127.0.0.1:5000/uploads/rendang.jpg](http://127.0.0.1:5000/uploads/rendang.jpg)",
+  "food_name": "Nasi Goreng",
+  "image_url": "http://127.0.0.1:5000/uploads/rendang.jpg",
   "recipe": "### Short Description\nRendang is a rich and tender coconut beef stew...\n..."
 }
 ```
