@@ -18,7 +18,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 try:
     genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
     llm_model = genai.GenerativeModel('gemini-pro')
-    print(">>> Gemini AI berhasil dikonfigurasi.")
+    print("Gemini AI berhasil dikonfigurasi.")
 except Exception as e:
     llm_model = None
     print(f"Gagal konfigurasi Gemini AI. Fitur resep tidak akan berfungsi. Error: {e}")
@@ -29,9 +29,8 @@ try:
     print(f">>> Model berhasil dimuat dari: {model_path}")
 except Exception as e:
     image_classifier_model = None
-    print(f"!!! KESALAHAN FATAL: Gagal memuat model dari '{model_path}'. Pastikan file ada. Error: {e}")
+    print(f"Gagal memuat model dari '{model_path}'. Pastikan file ada. Error: {e}")
 
-# Daftar kelas, pastikan urutannya sama persis dengan hasil training di Colab
 CLASS_NAMES = [
     'Ayam Goreng', 'Burger', 'French Fries', 'Gado-Gado', 'Ikan Goreng', 
     'Mie Goreng', 'Nasi Goreng', 'Nasi Padang', 'Pizza', 'Rawon', 'Rendang', 'Sate', 'Soto'
@@ -95,7 +94,6 @@ def predict():
         food_name_display = food_name_raw.replace('_', ' ').title()
         recipe_text = generate_recipe_from_llm(food_name_display)
 
-        # Buat URL lengkap yang bisa diakses dari mana saja oleh frontend
         base_url = request.host_url.replace('0.0.0.0', '127.0.0.1')
         image_url = f"{base_url}uploads/{filename}"
 
@@ -113,5 +111,4 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    # host='0.0.0.0' membuat server bisa diakses dari perangkat lain di jaringan yang sama
     app.run(debug=True, host='0.0.0.0', port=5000)
