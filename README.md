@@ -22,7 +22,7 @@ A Flask-based backend that classifies Indonesian food from an image and dynamica
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 To get the API running on your local machine, follow these steps.
 
@@ -62,7 +62,7 @@ GOOGLE_API_KEY="YOUR_API_KEY_HERE"
 1. Create a ```models/``` directory in the project's root.
 2. Place your trained model file inside this directory.
 
-## ▶️ Usage
+## Usage
 Once the setup is complete, run the Flask server from your terminal:
 ```bash
 python app.py
