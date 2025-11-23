@@ -26,7 +26,7 @@ except Exception as e:
 try:
     model_path = os.path.join('models', 'MobileNetV2.h5')
     image_classifier_model = tf.keras.models.load_model(model_path)
-    print(f">>> Model berhasil dimuat dari: {model_path}")
+    print(f"Model berhasil dimuat dari: {model_path}")
 except Exception as e:
     image_classifier_model = None
     print(f"Gagal memuat model dari '{model_path}'. Pastikan file ada. Error: {e}")
@@ -37,7 +37,6 @@ CLASS_NAMES = [
 ]
 
 def process_image(image_path, target_size=(224, 224)):
-    """Membuka, me-resize, dan memproses gambar untuk model."""
     try:
         img = Image.open(image_path).convert('RGB')
         img = img.resize(target_size)
@@ -49,7 +48,6 @@ def process_image(image_path, target_size=(224, 224)):
         return None
 
 def generate_recipe_from_llm(food_name):
-    """Membuat prompt dan meminta resep dari Gemini AI."""
     if not llm_model:
         return "Maaf, fitur pembuatan resep sedang tidak tersedia."
     
@@ -69,7 +67,6 @@ def generate_recipe_from_llm(food_name):
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    """Endpoint utama untuk prediksi gambar."""
     if image_classifier_model is None:
         return jsonify({'error': 'Model klasifikasi tidak tersedia di server.'}), 503
 
@@ -107,7 +104,6 @@ def predict():
 
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
-    """Endpoint untuk menyajikan/menampilkan gambar yang sudah di-upload."""
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
