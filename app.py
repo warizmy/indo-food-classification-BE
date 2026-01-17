@@ -1,7 +1,6 @@
 import os
 import logging
 from typing import Optional, Tuple
-
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -11,17 +10,14 @@ import tensorflow as tf
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
-# Load environment variables
 load_dotenv()
 
-# Initialize Flask application
 app = Flask(__name__)
 CORS(app)
 
@@ -34,7 +30,6 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
-# Create upload folder if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Food classification labels
@@ -53,7 +48,9 @@ def initialize_gemini_ai() -> Optional[genai.GenerativeModel]:
             return None
             
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-pro')
+        model = genai.GenerativeModel(
+            model_name='models/gemini-2.5-flash'
+        )
         logger.info("Gemini AI successfully configured")
         return model
     except Exception as e:
@@ -117,7 +114,6 @@ def generate_recipe(food_name: str, llm_model: Optional[genai.GenerativeModel]) 
         return "An error occurred while generating the recipe. Please try again later."
 
 
-# Initialize models
 llm_model = initialize_gemini_ai()
 image_classifier_model = load_classification_model()
 
@@ -141,14 +137,14 @@ def predict():
         - Content-Type: multipart/form-data
         - Body: file (image file)
     """
-    # Validate model availability
+    
     if image_classifier_model is None:
         logger.error("Prediction request failed: Model not available")
         return jsonify({
             'error': 'Classification model is not available on the server'
         }), 503
 
-    # Validate file presence
+
     if 'file' not in request.files:
         logger.warning("Prediction request missing file")
         return jsonify({
@@ -163,7 +159,7 @@ def predict():
             'error': 'No file selected for upload'
         }), 400
     
-    # Validate file type
+
     if not allowed_file(file.filename):
         logger.warning(f"Invalid file type uploaded: {file.filename}")
         return jsonify({
@@ -200,7 +196,7 @@ def predict():
         # Generate recipe
         recipe_text = generate_recipe(food_name_display, llm_model)
 
-        # Construct image URL
+
         base_url = request.host_url.rstrip('/')
         if '0.0.0.0' in base_url:
             base_url = base_url.replace('0.0.0.0', '127.0.0.1')
