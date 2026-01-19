@@ -21,6 +21,9 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
+app.config['ENV'] = 'production'
+app.config['DEBUG'] = False
+
 # Configuration
 UPLOAD_FOLDER = 'uploads'
 MODEL_PATH = os.path.join('models', 'MobileNetV2.h5')
@@ -273,15 +276,3 @@ def internal_error(error):
     return jsonify({
         'error': 'Internal server error'
     }), 500
-
-
-if __name__ == '__main__':
-    logger.info("Starting Food Classification API server...")
-    logger.info(f"Upload folder: {UPLOAD_FOLDER}")
-    logger.info(f"Model path: {MODEL_PATH}")
-    
-    app.run(
-        debug=True,
-        host='0.0.0.0',
-        port=5000
-    )
