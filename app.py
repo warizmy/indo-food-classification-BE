@@ -99,10 +99,34 @@ def generate_recipe(food_name: str, llm_model: Optional[genai.GenerativeModel]) 
         return "Recipe generation service is currently unavailable."
     
     prompt = f"""
-    You are an expert Indonesian cuisine chef.
-    Provide a delicious and easy-to-follow recipe for '{food_name}'.
-    Use clear Markdown formatting, including sections for 'Description', 'Ingredients', and 'Instructions'.
-    Write the recipe in Indonesian language as it's an Indonesian dish.
+    Generate a cooking recipe for Indonesian food: "{food_name}".
+
+    STRICT RULES:
+    - Write ONLY the recipe content.
+    - Do NOT include greetings, introductions, or conclusions.
+    - Do NOT mention yourself, the reader, or any role.
+    - Do NOT add storytelling or conversational text.
+    - Start directly with the recipe title.
+    - Keep descriptions concise.
+    - Avoid unnecessary culinary jargon.
+    - Do NOT mention the food name over/on top the description. 
+
+    FORMAT REQUIREMENTS:
+    - Use Markdown.
+    - Use the following EXACT, LITERAL structure:
+    
+    ### Deskripsi
+    (Brief description of the dish, 2 sentences max)
+
+    ### Bahan-bahan
+    (List ingredients clearly using bullet points)
+
+    ### Cara Membuat
+    (Numbered step-by-step instructions)
+
+    LANGUAGE:
+    - Output must be in Bahasa Indonesia.
+    - Use clear, concise, and practical cooking instructions.
     """
     
     try:
