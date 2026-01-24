@@ -6,3 +6,5 @@ python-dotenv
 numpy
 flask_cors
 gunicorn
+langchain
+langchain-google-genai

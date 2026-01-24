@@ -5,10 +5,16 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from PIL import Image
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain.prompts import PromptTemplate
+from langchain.globals import set_llm_cache
+from langchain.cache import InMemoryCache
 import numpy as np
 import tensorflow as tf
 import google.generativeai as genai
 from dotenv import load_dotenv
+
+set_llm_cache(InMemoryCache())
 
 logging.basicConfig(
     level=logging.INFO,
@@ -42,24 +48,23 @@ CLASS_NAMES = [
     'Rendang', 'Sate', 'Soto'
 ]
 
-
-def initialize_gemini_ai() -> Optional[genai.GenerativeModel]:
+def initialize_langchain_gemini():
     try:
         api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
-            logger.warning("GOOGLE_API_KEY not found in environment variables")
             return None
-            
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel(
-            model_name='models/gemini-2.5-flash'
+        
+        # Inisialisasi LLM via LangChain
+        llm = ChatGoogleGenerativeAI(
+            model="models/gemini-2.5-flash", # Pastikan nama model sesuai
+            google_api_key=api_key,
+            temperature=0.7
         )
-        logger.info("Gemini AI successfully configured")
-        return model
+        logger.info("LangChain Gemini AI initialized")
+        return llm
     except Exception as e:
-        logger.error(f"Failed to configure Gemini AI: {str(e)}")
+        logger.error(f"LangChain Init Error: {str(e)}")
         return None
-
 
 def load_classification_model() -> Optional[tf.keras.Model]:
     try:
@@ -96,53 +101,33 @@ def preprocess_image(
         return None
 
 
-def generate_recipe(food_name: str, llm_model: Optional[genai.GenerativeModel]) -> str:
-    if not llm_model:
-        logger.warning("Recipe generation unavailable: LLM model not initialized")
-        return "Recipe generation service is currently unavailable."
-    
-    prompt = f"""
-    Generate a cooking recipe for Indonesian food: "{food_name}".
+recipe_template = """
+Generate a cooking recipe for Indonesian food: "{food_name}".
 
-    STRICT RULES:
-    - Write ONLY the recipe content.
-    - Do NOT include greetings, introductions, or conclusions.
-    - Do NOT mention yourself, the reader, or any role.
-    - Do NOT add storytelling or conversational text.
-    - Start directly with the recipe title.
-    - Keep descriptions concise.
-    - Avoid unnecessary culinary jargon.
-    - Do NOT mention the food name over/on top the description. 
+STRICT RULES:
+- Write ONLY the recipe content in Bahasa Indonesia.
+- Start directly with the recipe title.
+- Format using Markdown with EXACT structure:
+  ### Deskripsi
+  ### Bahan-bahan
+  ### Cara Membuat
 
-    FORMAT REQUIREMENTS:
-    - Use Markdown.
-    - Use the following EXACT, LITERAL structure:
-    
-    ### Deskripsi
-    (Brief description of the dish, 2 sentences max)
+LANGUAGE: Bahasa Indonesia.
+"""
+prompt_template = PromptTemplate.from_template(recipe_template)
 
-    ### Bahan-bahan
-    (List ingredients clearly using bullet points)
-
-    ### Cara Membuat
-    (Numbered step-by-step instructions)
-
-    LANGUAGE:
-    - Output must be in Bahasa Indonesia.
-    - Use clear, concise, and practical cooking instructions.
-    """
-    
-    try:
-        response = llm_model.generate_content(prompt)
-        logger.info(f"Recipe generated successfully for: {food_name}")
-        return response.text
-    except Exception as e:
-        logger.error(f"Error generating recipe via Gemini AI: {str(e)}")
-        return "An error occurred while generating the recipe. Please try again later."
-
-
-llm_model = initialize_gemini_ai()
+# Inisialisasi
 image_classifier_model = load_classification_model()
+llm_chain = prompt_template | initialize_langchain_gemini()
+
+def generate_recipe_langchain(food_name: str) -> str:
+    try:
+        # Pemanggilan Chain (Otomatis cek cache dulu)
+        response = llm_chain.invoke({"food_name": food_name})
+        return response.content
+    except Exception as e:
+        logger.error(f"Error generating recipe: {str(e)}")
+        return "Gagal generate resep, coba lagi nanti."
 
 
 @app.route('/health', methods=['GET'])
@@ -151,7 +136,7 @@ def health_check():
     status = {
         'status': 'healthy',
         'classifier_model': image_classifier_model is not None,
-        'recipe_generation': llm_model is not None
+        'recipe_generation': llm_chain is not None
     }
     return jsonify(status), 200
 
@@ -221,7 +206,7 @@ def predict():
         )
 
         # Generate recipe
-        recipe_text = generate_recipe(food_name_display, llm_model)
+        recipe_text = generate_recipe_langchain(food_name_display)
 
 
         base_url = request.host_url.rstrip('/')
@@ -230,11 +215,11 @@ def predict():
         image_url = f"{base_url}/uploads/{filename}"
 
         return jsonify({
-            'success': True,
-            'food_name': food_name_display,
-            'confidence': round(confidence, 4),
-            'recipe': recipe_text,
-            'image_url': image_url
+        'success': True,
+        'food_name': food_name_display,
+        'confidence': round(confidence, 4),
+        'recipe': recipe_text,
+        'image_url': image_url
         }), 200
 
     except Exception as e:
