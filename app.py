@@ -54,9 +54,9 @@ def initialize_langchain_gemini():
         if not api_key:
             return None
         
-        # Inisialisasi LLM via LangChain
+        # Initiate LLM via LongChain
         llm = ChatGoogleGenerativeAI(
-            model="models/gemini-2.5-flash", # Pastikan nama model sesuai
+            model="models/gemini-2.5-flash",
             google_api_key=api_key,
             temperature=0.7
         )
@@ -79,11 +79,9 @@ def load_classification_model() -> Optional[tf.keras.Model]:
         logger.error(f"Failed to load model from '{MODEL_PATH}': {str(e)}")
         return None
 
-
 def allowed_file(filename: str) -> bool:
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 
 def preprocess_image(
     image_path: str,
@@ -100,7 +98,6 @@ def preprocess_image(
         logger.error(f"Error preprocessing image '{image_path}': {str(e)}")
         return None
 
-
 recipe_template = """
 Generate a cooking recipe for Indonesian food: "{food_name}".
 
@@ -116,13 +113,12 @@ LANGUAGE: Bahasa Indonesia.
 """
 prompt_template = PromptTemplate.from_template(recipe_template)
 
-# Inisialisasi
 image_classifier_model = load_classification_model()
 llm_chain = prompt_template | initialize_langchain_gemini()
 
 def generate_recipe_langchain(food_name: str) -> str:
     try:
-        # Pemanggilan Chain (Otomatis cek cache dulu)
+        # Cache Checking
         response = llm_chain.invoke({"food_name": food_name})
         return response.content
     except Exception as e:
