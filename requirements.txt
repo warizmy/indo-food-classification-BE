@@ -1,10 +1,9 @@
-Flask 
-tensorflow 
-Pillow 
-google-generativeai 
-python-dotenv 
+Flask
+flask-cors
+tensorflow
+Pillow
 numpy
-flask_cors
-gunicorn
+python-dotenv
 langchain
+langchain-community
 langchain-google-genai

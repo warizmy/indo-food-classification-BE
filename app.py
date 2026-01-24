@@ -6,9 +6,9 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from PIL import Image
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts import PromptTemplate
-from langchain.globals import set_llm_cache
-from langchain.cache import InMemoryCache
+from langchain_core.prompts import PromptTemplate
+from langchain_core.globals import set_llm_cache
+from langchain_community.cache import InMemoryCache
 import numpy as np
 import tensorflow as tf
 import google.generativeai as genai
