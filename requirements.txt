@@ -2,6 +2,7 @@ Flask
 flask-cors
 tensorflow
 Pillow
+gunicorn 
 numpy
 python-dotenv
 langchain
