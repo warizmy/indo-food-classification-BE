@@ -24,8 +24,19 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
+FLASK_ENV = os.getenv('FLASK_ENV', 'development')
+
 app = Flask(__name__)
 CORS(app)
+
+if FLASK_ENV == 'production':
+    app.config['ENV'] = 'production'
+    app.config['DEBUG'] = False
+    logging.getLogger().setLevel(logging.INFO)
+else:
+    app.config['ENV'] = 'development'
+    app.config['DEBUG'] = True
+    logging.getLogger().setLevel(logging.DEBUG)
 
 app.config['ENV'] = 'production'
 app.config['DEBUG'] = False
@@ -257,3 +268,6 @@ def internal_error(error):
     return jsonify({
         'error': 'Internal server error'
     }), 500
+    
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
