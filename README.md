@@ -1,101 +1,100 @@
 ---
-title: Indonesian Food Classification API
-emoji: 🍲
-colorFrom: orange
-colorTo: red
+title: Indonesian Food Classification Service
 sdk: docker
 app_port: 7860
 ---
 
-# Indonesian Food Classification API
+# Indonesian Food Classification Service
 
-A Flask-based backend that classifies Indonesian food from an image and dynamically generates its recipe using the Google Gemini AI. This API is designed to be the intelligent core for any modern web or mobile application.
+A production-grade Flask API that combines Computer Vision and Large Language Models (LLMs) to classify Indonesian cuisine and generate structured culinary data. The service utilizes a MobileNetV2 architecture for image inference and Google Gemini 1.5 Flash for dynamic recipe orchestration.
 
----
+## System Architecture
 
-## Core Features
+```mermaid
+graph LR
+    A[Client Request] --> B[Nginx/Gunicorn]
+    B --> C[Flask Application]
+    C --> D[MobileNetV2 Classifier]
+    D --> E[Gemini 1.5 Flash via LangChain]
+    E --> F[Structured JSON Response]
+```
 
-* **Image Classification**: Leverages a MobileNetV2-based model.
-* **Dynamic Recipe Generation**: Integrates with the Google Gemini Pro API to provide relevant, high-quality recipes in real-time.
-* **RESTful by Design**: Features a clean and simple `/predict` endpoint for seamless frontend integration.
+## Technical Specifications
 
----
+### Core Engine
+- **Inference Model**: MobileNetV2 (Transfer Learning)
+- **Generative Model**: Gemini 1.5 Flash (via LangChain Google GenAI)
+- **Backend Framework**: Flask (Python 3.12)
+- **WSGI Server**: Gunicorn
 
-## Tech Stack
+### Infrastructure & DevOps
+- **Containerization**: Docker (Debian-based slim image)
+- **Cloud Hosting**: Hugging Face Spaces
+- **Memory Management**: CPU-optimized TensorFlow builds to maintain low memory footprint during inference.
 
--   **Language**: Python 3.12
--   **Framework**: Flask
--   **Machine Learning**: TensorFlow / Keras
--   **Generative AI**: Google Gemini Pro API
--   **Core Libraries**: Flask-CORS, Pillow, python-dotenv
+## API Documentation
 
----
+### 1. System Health Check
+`GET /health`
 
-## Getting Started
+Verifies the status of the classifier model and LLM chain initialization.
+- **Success Response**: `200 OK`
+- **Payload**: `{"status": "healthy", "classifier_model": true, "recipe_generation": true}`
 
-To get the API running on your local machine, follow these steps.
+### 2. Image Inference & Recipe Generation
+`POST /predict`
 
-### 1. Clone the Repository
+Main endpoint for processing image data.
+- **Content-Type**: `multipart/form-data`
+- **Request Body**: `file` (Binary Image Data)
+- **Response Format**: 
+```json
+{
+  "success": true,
+  "food_name": "Rendang",
+  "confidence": 0.9845,
+  "image_url": "https://[space-name].hf.space/uploads/filename.jpg",
+  "recipe": "### Deskripsi\n...\n### Bahan-bahan\n..."
+}
+```
+
+## Classification Capabilities
+The model is trained to identify the following classes:
+`Ayam Goreng`, `Burger`, `French Fries`, `Gado-Gado`, `Ikan Goreng`, `Mie Goreng`, `Nasi Goreng`, `Nasi Padang`, `Pizza`, `Rawon`, `Rendang`, `Sate`, `Soto`.
+
+## Installation and Local Deployment
+
+### Prerequisites
+- Python 3.12+
+- Google Gemini API Key
+
+### Setup
+1. **Clone and Install**:
 ```bash
 git clone https://github.com/warizmy/indo-food-classification-BE.git
 cd indo-food-classification-BE
-```
-
-### 2. Set Up a Virtual Environment
-```bash
-# Create the environment
 python -m venv venv
-
-# Activate on Windows
-.\venv\Scripts\activate
-
-# Activate on macOS/Linux
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-All required packages are listed in ```requirements.txt```
-```bash
+source venv/bin/activate # Windows: .\\venv\\Scripts\\activate
 pip install -r requirements.txt
 ```
 
-### 4. Configure Environment Variables
-The API requires a Google API key to function.
-1. Create a new file named ```.env``` in the project's root directory.
-2. Add your Google API key to the file:
-```bash
-GOOGLE_API_KEY="YOUR_API_KEY_HERE"
+2. **Configuration**:
+Create a `.env` file in the root directory:
+```env
+GOOGLE_API_KEY=your_api_key_here
+FLASK_ENV=development
 ```
 
-### 5. Place the Model File
-1. Create a ```models/``` directory in the project's root.
-2. Place your trained model file inside this directory.
-
-## Usage
-Once the setup is complete, run the Flask server from your terminal:
+3. **Execution**:
 ```bash
 python app.py
 ```
-The API will be available at ```http://127.0.0.1:5000```
 
-## API Endpoint
-```POST /predict```
+## Production Deployment
+The service is designed to run in a containerized environment. The provided `Dockerfile` handles the environment setup, directory permissions for `/uploads`, and the Gunicorn binding to port `7860`, which is the standard entry point for Hugging Face Spaces.
 
-The primary endpoint for image classification.
-- Method: ```POST```
-- Body: ```multipart/form-data``` with a single key-value pair:
-   - ```file```: The image file to be classified.
-- Success Response (```200 OK```):
-```bash
-{
-  "food_name": "Nasi Goreng",
-  "image_url": "http://127.0.0.1:5000/uploads/rendang.jpg",
-  "recipe": "### Short Description\nRendang is a rich and tender coconut beef stew...\n..."
-}
-```
-- Error Response:
-```bash
-{
-  "error": "Request does not contain an image file"
-}
-```
+### Environment Variables for Production
+Ensure the following are configured in your CI/CD or Cloud Provider secrets:
+- `GOOGLE_API_KEY`: Required for LLM functionality.
+
+---
