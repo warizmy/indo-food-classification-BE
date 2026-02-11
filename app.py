@@ -45,7 +45,7 @@ app.config['DEBUG'] = False
 UPLOAD_FOLDER = 'uploads'
 MODEL_PATH = os.path.join('models', 'MobileNetV2.h5')
 TARGET_IMAGE_SIZE = (224, 224)
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
