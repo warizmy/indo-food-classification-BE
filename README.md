@@ -6,7 +6,7 @@ app_port: 7860
 
 # Indonesian Food Classification Service
 
-A production-grade Flask API that combines Computer Vision and Large Language Models (LLMs) to classify Indonesian cuisine and generate structured culinary data. The service utilizes a MobileNetV2 architecture for image inference and Google Gemini 1.5 Flash for dynamic recipe orchestration.
+A production-grade Flask API that combines Computer Vision and Large Language Models (LLMs) to classify Indonesian cuisine and generate structured culinary data. The service utilizes a MobileNetV2 architecture for image inference and Google Gemini 2.5 Flash for dynamic recipe orchestration.
 
 ## System Architecture
 
