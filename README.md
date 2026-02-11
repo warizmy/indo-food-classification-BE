@@ -1,3 +1,12 @@
+---
+title: Indonesian Food Classification API
+emoji: 🍲
+colorFrom: orange
+colorTo: red
+sdk: docker
+app_port: 7860
+---
+
 # Indonesian Food Classification API
 
 A Flask-based backend that classifies Indonesian food from an image and dynamically generates its recipe using the Google Gemini AI. This API is designed to be the intelligent core for any modern web or mobile application.

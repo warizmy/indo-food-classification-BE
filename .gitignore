@@ -1,4 +1,6 @@
+.venv/
 .env
-.venv
-uploads
-FLASK_ENV=development
+__pycache__/
+uploads/
+*.pyc
+.DS_Store

@@ -38,9 +38,6 @@ else:
     app.config['DEBUG'] = True
     logging.getLogger().setLevel(logging.DEBUG)
 
-app.config['ENV'] = 'production'
-app.config['DEBUG'] = False
-
 # Configuration
 UPLOAD_FOLDER = 'uploads'
 MODEL_PATH = os.path.join('models', 'MobileNetV2.h5')
@@ -270,4 +267,4 @@ def internal_error(error):
     }), 500
     
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=7860)
