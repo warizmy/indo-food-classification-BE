@@ -15,7 +15,7 @@ graph LR
     A[Client Request] --> B[Nginx/Gunicorn]
     B --> C[Flask Application]
     C --> D[MobileNetV2 Classifier]
-    D --> E[Gemini 1.5 Flash via LangChain]
+    D --> E[Gemini 2.5 Flash via LangChain]
     E --> F[Structured JSON Response]
 ```
 
@@ -23,7 +23,7 @@ graph LR
 
 ### Core Engine
 - **Inference Model**: MobileNetV2 (Transfer Learning)
-- **Generative Model**: Gemini 1.5 Flash (via LangChain Google GenAI)
+- **Generative Model**: Gemini 2.5 Flash (via LangChain Google GenAI)
 - **Backend Framework**: Flask (Python 3.12)
 - **WSGI Server**: Gunicorn
 
